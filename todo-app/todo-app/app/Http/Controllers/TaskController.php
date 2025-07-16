@@ -3,14 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Task; 
+use App\Models\Task;
 
 class TaskController extends Controller
 {
     // GET /api/tasks
-    public function index()
+    public function index(Request $request)
     {   
-        return response()->json(Task::all(), 200);
+        $query = Task::query();
+
+        // Recherche par nom ou description
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where('name', 'like', "%$searchTerm%")
+                  ->orWhere('description', 'like', "%$searchTerm%");
+        }
+
+        // Filtrer par statut "completed"
+        if ($request->has('completed')) {
+            $completed = $request->completed === 'true';
+            $query->where('completed', $completed);
+        }
+
+        return response()->json($query->get(), 200);
     }
 
     // POST /api/tasks
@@ -35,6 +50,22 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json(['message' => 'Tâche non trouvée'], 404);
         }
+
+        return response()->json($task, 200);
+    }
+
+    // PUT /api/tasks/{id}/toggle
+    public function toggleCompletion($id)
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Tâche non trouvée'], 404);
+        }
+
+        // Bascule le statut "completed" de la tâche
+        $task->completed = !$task->completed;
+        $task->save();
 
         return response()->json($task, 200);
     }
