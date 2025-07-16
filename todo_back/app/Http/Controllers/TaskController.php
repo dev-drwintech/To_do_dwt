@@ -12,7 +12,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'name'=>'string|required',
             'description'=>'nullable|required|max:250|nullable',
-            'priority'=>'in:lower,medium,higher|required',
+            'priority'=>'required|in:lower,medium,higher',
             'completed'=>'boolean',
 
             'end_date'=>'date|required',
@@ -41,4 +41,9 @@ public function index(){
         $task->save();
         return response()->json($task,200);
     }
+
+
+
+
+    
 }
