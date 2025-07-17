@@ -1,0 +1,93 @@
+.todo-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Titre */
+.todo-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Formulaire */
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.todo-input,
+.todo-textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.todo-input:focus,
+.todo-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.todo-button {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.todo-button:hover {
+  background-color: #0056b3;
+}
+
+/* Liste des tâches */
+.todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+.todo-item {
+  background-color: violet;
+  border: 1px solid #add;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.todo-item-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.todo-item-description {
+  margin: 0 0 10px 0;
+  color: #555;
+}
+
+.todo-delete-button {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.todo-delete-button:hover {
+  background-color: #c82333;
+}
