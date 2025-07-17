@@ -1,18 +1,74 @@
 
-
-
 <?php
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 
-Route::get('test', function () {
-    return response() -> json(['message' => 'Ok']);
+
+
+Route::post('/register', function(Request $request) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+    ]);
+
+    // Générer un token API
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    return response()->json([
+        'user' => $user,
+        'token' => $token,
+    ], 201);
 });
 
-Route::get('/tasks',[TaskController::class, 'index']);
 
-Route::post('/tasks',[TaskController::class, 'store']);
+Route::post('/login', function(Request $request){
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+    
+    $user = User::where('email', $request->email)->first();
 
-Route::delete('/tasks/{id}',[TaskController::class, 'destroy']);
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['Les identifiants sont incorrects.'],
+        ]);
+    }
 
-Route::patch('/tasks/{id}',[TaskController::class, 'complete']);
+    // Crée un token personnel
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    return response()->json([
+        'user' => $user,
+        'token' => $token,
+    ]);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Tâches (CRUD complet + marquer complète)
+    Route::apiResource('tasks', TaskController::class);
+
+    // Route spécifique pour marquer tâche complète
+    Route::patch('tasks/{task}/complete', [TaskController::class, 'complete']);
+
+    // Utilisateurs (CRUD complet)
+    Route::apiResource('users', UserController::class);
+
+    // Optionnel : route logout si tu utilises Sanctum
+    Route::post('/logout', function(Request $request){
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Déconnexion réussie']);
+    });
+});

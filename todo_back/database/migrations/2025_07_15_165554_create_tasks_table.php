@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('priority',['lower','medium','higher'])->default('medium');
             $table->boolean('completed')->default(false);
             $table->date('end_date');
-
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
             $table->timestamps();
         });
     }
