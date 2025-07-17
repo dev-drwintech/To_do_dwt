@@ -7,28 +7,14 @@ use App\Models\Task;
 
 class TaskController extends Controller
 {
-    // GET /api/tasks
-    public function index(Request $request)
-    {   
-        $query = Task::query();
-
-        // Recherche par nom ou description
-        if ($request->has('search')) {
-            $searchTerm = $request->search;
-            $query->where('name', 'like', "%$searchTerm%")
-                  ->orWhere('description', 'like', "%$searchTerm%");
-        }
-
-        // Filtrer par statut "completed"
-        if ($request->has('completed')) {
-            $completed = $request->completed === 'true';
-            $query->where('completed', $completed);
-        }
-
-        return response()->json($query->get(), 200);
+    
+    public function index()
+    {
+        $tasks = Task::where('user_id', auth()->id())->get();
+        return response()->json($tasks, 200);
     }
 
-    // POST /api/tasks
+   
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -37,15 +23,20 @@ class TaskController extends Controller
             'completed' => 'boolean',
         ]);
 
-        $task = Task::create($validated);
+        $task = Task::create([
+            ...$validated,
+            'user_id' => auth()->id(),
+        ]);
 
         return response()->json($task, 201);
     }
 
-    // GET /api/tasks/{id}
+    
     public function show($id)
     {
-        $task = Task::find($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->first();
 
         if (!$task) {
             return response()->json(['message' => 'Tâche non trouvée'], 404);
@@ -54,29 +45,15 @@ class TaskController extends Controller
         return response()->json($task, 200);
     }
 
-    // PUT /api/tasks/{id}/toggle
-    public function toggleCompletion($id)
-    {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['message' => 'Tâche non trouvée'], 404);
-        }
-
-        // Bascule le statut "completed" de la tâche
-        $task->completed = !$task->completed;
-        $task->save();
-
-        return response()->json($task, 200);
-    }
-
-    // PUT /api/tasks/{id}
+    
     public function update(Request $request, $id)
     {
-        $task = Task::find($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->first();
 
         if (!$task) {
-            return response()->json(['message' => 'Tâche non trouvée'], 404);
+            return response()->json(['message' => 'Tâche non trouvée ou non autorisée'], 404);
         }
 
         $validated = $request->validate([
@@ -90,13 +67,14 @@ class TaskController extends Controller
         return response()->json($task, 200);
     }
 
-    // DELETE /api/tasks/{id}
     public function destroy($id)
     {
-        $task = Task::find($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->first();
 
         if (!$task) {
-            return response()->json(['message' => 'Tâche non trouvée'], 404);
+            return response()->json(['message' => 'Tâche non trouvée ou non autorisée'], 404);
         }
 
         $task->delete();
