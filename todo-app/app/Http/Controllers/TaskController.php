@@ -4,24 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class TaskController extends Controller
 {
-    // GET /api/tasks
+    // Récupérer la liste des tâches de l'utilisateur connecté
     public function index()
     {
-        return response()->json(Task::all());
+        // On récupère uniquement les tâches liées à l'utilisateur connecté
+        $tasks = Task::where('user_id', auth()->id())->get();
+
+        return response()->json($tasks);
     }
 
-    // GET /api/tasks/{id}
+    // Afficher une tâche précise (s'assurer qu'elle appartient à l'utilisateur)
     public function show($id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->firstOrFail();
+
         return response()->json($task);
     }
 
-    // POST /api/tasks
+    // Créer une nouvelle tâche liée à l'utilisateur connecté
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -33,12 +38,13 @@ class TaskController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'completed' => false,
+            'user_id' => auth()->id(), // important pour lier la tâche à l'utilisateur
         ]);
 
         return response()->json($task, 201);
     }
 
-    // PUT /api/tasks/{id}
+    // Mettre à jour une tâche (vérifier aussi que l'utilisateur est bien propriétaire)
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
@@ -47,18 +53,24 @@ class TaskController extends Controller
             'completed' => 'boolean',
         ]);
 
-        $task = Task::findOrFail($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->firstOrFail();
+
         $task->update($validated);
 
         return response()->json($task);
     }
 
-    // DELETE /api/tasks/{id}
+    // Supprimer une tâche (vérifier la propriété)
     public function destroy($id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->firstOrFail();
+
         $task->delete();
 
-        return response()->json(['message' => 'Deleted successfully']);
+        return response()->json(['message' => 'Tâche supprimée avec succès']);
     }
 }

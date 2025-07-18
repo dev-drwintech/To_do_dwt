@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // clé étrangère vers users
             $table->string('name');
             $table->text('description')->nullable();
             $table->boolean('completed')->default(false);
             $table->timestamps();
-});
-
+        });
     }
 
     public function down()
@@ -23,5 +23,3 @@ return new class extends Migration
         Schema::dropIfExists('tasks');
     }
 };
-?>
-

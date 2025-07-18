@@ -1,28 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [editingTaskId, setEditingTaskId] = useState(null);
-  const [updatedTask, setUpdatedTask] = useState({ name: "", description: "" });
+  const [updatedTask, setUpdatedTask] = useState({ name: '', description: '' });
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (!token) {
+      navigate('/login');
+    } else {
+      fetchTasks();
+    }
+  }, [token]);
 
   const fetchTasks = () => {
-    fetch("http://localhost:8000/api/tasks")
-      .then((res) => res.json())
+    fetch('http://localhost:8000/api/tasks', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          navigate('/login');
+        }
+        return res.json();
+      })
       .then((data) => setTasks(data))
-      .catch((err) => console.error("Erreur de chargement des tâches:", err));
+      .catch((err) => console.error('Erreur de chargement des tâches:', err));
   };
 
   const handleDelete = (id) => {
     fetch(`http://localhost:8000/api/tasks/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(() => fetchTasks())
-      .catch((err) => console.error("Erreur lors de la suppression:", err));
+      .catch((err) => console.error('Erreur lors de la suppression:', err));
   };
 
   const handleEdit = (task) => {
@@ -37,9 +56,10 @@ function TaskList() {
 
   const handleUpdateSubmit = (id) => {
     fetch(`http://localhost:8000/api/tasks/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(updatedTask),
     })
@@ -47,27 +67,18 @@ function TaskList() {
         setEditingTaskId(null);
         fetchTasks();
       })
-      .catch((err) => console.error("Erreur lors de la mise à jour:", err));
+      .catch((err) => console.error('Erreur lors de la mise à jour:', err));
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <h2>Liste des tâches</h2>
-      <Link to="/add">
-        <button style={{ marginBottom: "20px" }}>
-          Ajouter une nouvelle tâche
-        </button>
-      </Link>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <button onClick={() => navigate('/add')} style={{ marginBottom: '20px' }}>
+        Ajouter une tâche
+      </button>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
         {tasks.map((task) => (
-          <li
-            key={task.id}
-            style={{
-              margin: "10px 0",
-              borderBottom: "1px solid #ccc",
-              paddingBottom: "5px",
-            }}
-          >
+          <li key={task.id} style={{ marginBottom: '15px', borderBottom: '1px solid #ccc' }}>
             {editingTaskId === task.id ? (
               <div>
                 <input
@@ -76,7 +87,7 @@ function TaskList() {
                   value={updatedTask.name}
                   onChange={handleUpdateChange}
                   placeholder="Nom"
-                  style={{ display: "block", marginBottom: "5px" }}
+                  style={{ width: '100%', marginBottom: '5px' }}
                 />
                 <input
                   type="text"
@@ -84,15 +95,10 @@ function TaskList() {
                   value={updatedTask.description}
                   onChange={handleUpdateChange}
                   placeholder="Description"
-                  style={{ display: "block", marginBottom: "5px" }}
+                  style={{ width: '100%', marginBottom: '5px' }}
                 />
-                <button onClick={() => handleUpdateSubmit(task.id)}>
-                  Enregistrer
-                </button>
-                <button
-                  onClick={() => setEditingTaskId(null)}
-                  style={{ marginLeft: "5px" }}
-                >
+                <button onClick={() => handleUpdateSubmit(task.id)}>Enregistrer</button>
+                <button onClick={() => setEditingTaskId(null)} style={{ marginLeft: '10px' }}>
                   Annuler
                 </button>
               </div>
@@ -101,10 +107,7 @@ function TaskList() {
                 <strong>{task.name}</strong>
                 <p>{task.description}</p>
                 <button onClick={() => handleEdit(task)}>Modifier</button>
-                <button
-                  onClick={() => handleDelete(task.id)}
-                  style={{ marginLeft: "5px" }}
-                >
+                <button onClick={() => handleDelete(task.id)} style={{ marginLeft: '10px' }}>
                   Supprimer
                 </button>
               </div>
