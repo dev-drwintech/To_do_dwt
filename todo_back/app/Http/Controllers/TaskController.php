@@ -63,7 +63,7 @@ class TaskController extends Controller
         return response()->json(null, 204);
     }
 
-    // Marque une tâche comme complète, si elle appartient à l'utilisateur connecté
+    // Marque une tâche comme complète
     public function complete(Tasks $task)
     {
         if ($task->user_id !== auth()->id()) {
@@ -76,13 +76,13 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
+    // Affiche une tâche spécifique
     public function show(Tasks $task)
-{
-    if ($task->user_id !== auth()->id()) {
-        return response()->json(['message' => 'Unauthorized'], 403);
+    {
+        if ($task->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($task);
     }
-
-    return response()->json($task);
-}
-
 }

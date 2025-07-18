@@ -1,13 +1,11 @@
-
 <?php
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
-
-
 
 Route::post('/register', function(Request $request) {
     $validated = $request->validate([
@@ -22,7 +20,6 @@ Route::post('/register', function(Request $request) {
         'password' => Hash::make($validated['password']),
     ]);
 
-    // Générer un token API
     $token = $user->createToken('api-token')->plainTextToken;
 
     return response()->json([
@@ -31,13 +28,12 @@ Route::post('/register', function(Request $request) {
     ], 201);
 });
 
-
 Route::post('/login', function(Request $request){
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
-    
+
     $user = User::where('email', $request->email)->first();
 
     if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -46,7 +42,6 @@ Route::post('/login', function(Request $request){
         ]);
     }
 
-    // Crée un token personnel
     $token = $user->createToken('api-token')->plainTextToken;
 
     return response()->json([
@@ -56,17 +51,15 @@ Route::post('/login', function(Request $request){
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-
-    // Tâches (CRUD complet + marquer complète)
+    // Tâches
     Route::apiResource('tasks', TaskController::class);
-
-    // Route spécifique pour marquer tâche complète
     Route::patch('tasks/{task}/complete', [TaskController::class, 'complete']);
+    Route::put('tasks/{task}', [TaskController::class, 'update']);
 
-    // Utilisateurs (CRUD complet)
+    // Utilisateurs
     Route::apiResource('users', UserController::class);
 
-    // Optionnel : route logout si tu utilises Sanctum
+    // Déconnexion
     Route::post('/logout', function(Request $request){
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Déconnexion réussie']);
