@@ -25,7 +25,7 @@ class TaskController extends Controller
 
         $task = Task::create([
             ...$validated,
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id(),//liaison de la tâche à l'utilisateur connecté.
         ]);
 
         return response()->json($task, 201);

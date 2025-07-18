@@ -208,7 +208,7 @@ import {
 
 const TodoApp = () => {
   // ==================== ÉTATS ====================
-  const [todos, setTodos] = useState([])
+  const [tasks, setTodos] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -258,7 +258,7 @@ const TodoApp = () => {
       setLoading(true)
       setError(null)
 
-      const response = await fetch(`${API_BASE_URL}/todos`, {
+      const response = await fetch(`${API_BASE_URL}/tasks`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -273,7 +273,7 @@ const TodoApp = () => {
       const data = await response.json()
       setTodos(data.data || data)
     } catch (error) {
-      console.error("Erreur fetch todos:", error)
+      console.error("Erreur fetch tasks:", error)
       setError("Impossible de charger les tâches.")
     } finally {
       setLoading(false)
@@ -286,7 +286,7 @@ const TodoApp = () => {
       setActionLoading(true)
       setError(null)
 
-      const response = await fetch(`${API_BASE_URL}/todos`, {
+      const response = await fetch(`${API_BASE_URL}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -323,7 +323,7 @@ const TodoApp = () => {
       setActionLoading(true)
       setError(null)
 
-      const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -363,7 +363,7 @@ const TodoApp = () => {
       // Animation avant suppression
       animateTodo(id)
 
-      const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -399,7 +399,7 @@ const TodoApp = () => {
 
       const newStatus = currentStatus === "terminé" ? "en_cours" : "terminé"
 
-      const response = await fetch(`${API_BASE_URL}/todos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -438,12 +438,12 @@ const TodoApp = () => {
 
   // Calcul automatique des statistiques à chaque changement
   useEffect(() => {
-    const total = todos.length
-    const completed = todos.filter((todo) => todo.status === "terminé").length
+    const total = tasks.length
+    const completed = tasks.filter((todo) => todo.status === "terminé").length
     const pending = total - completed
     const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0
     setStats({ total, completed, pending, completionRate })
-  }, [todos])
+  }, [tasks])
 
   // ==================== FONCTIONS UTILITAIRES ====================
   const animateTodo = (id) => {
@@ -503,7 +503,7 @@ const TodoApp = () => {
     })
   }
 
-  const filteredTodos = todos
+  const filteredTodos = tasks
     .filter((todo) => showCompleted || todo.status !== "terminé")
     .filter(
       (todo) =>
