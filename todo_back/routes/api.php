@@ -25,6 +25,7 @@ Route::post('/register', function(Request $request) {
     return response()->json([
         'user' => $user,
         'token' => $token,
+        'message' => "Compte créé avec succès",
     ], 201);
 });
 
@@ -65,3 +66,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['message' => 'Déconnexion réussie']);
     });
 });
+
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json($request->user());
+});
+

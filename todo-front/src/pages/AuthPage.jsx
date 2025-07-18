@@ -72,12 +72,14 @@ function AuthPage() {
     try {
       const response = await axios.post('http://localhost:8000/api/register', registerForm);
       console.log('Enregistrement réussi:', response.data);
-      setSuccess('Compte créé avec succès !');
+      localStorage.setItem('user', response.data.user.name);
+      console.log(response.data.message);
+      setSuccess(response.data.message);
       
       // Basculer vers la connexion après l'enregistrement
       setTimeout(() => {
         setIsLogin(true);
-        setSuccess('');
+        setSuccess(response.data.message);
       }, 2000);
       
     } catch (err) {

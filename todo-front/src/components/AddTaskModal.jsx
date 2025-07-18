@@ -77,7 +77,7 @@ function AddTaskModal({ onClose, onSubmit }) {
               >
                 <option value="lower">🟢 Basse</option>
                 <option value="medium">🟡 Moyenne</option>
-                <option value="height">🔴 Élevée</option>
+                <option value="higher">🔴 Élevée</option>
               </select>
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                 <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,37 +125,3 @@ function AddTaskModal({ onClose, onSubmit }) {
 }
 
 export default AddTaskModal;
-
-// Composant de démonstration
-// export default function TaskModalDemo() {
-//   const [showModal, setShowModal] = useState(false);
-
-//   const handleSubmit = async (formData) => {
-//     console.log('Données soumises:', formData);
-//     // Simuler une requête API
-//     await new Promise(resolve => setTimeout(resolve, 500));
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-//       <div className="text-center">
-//         <h1 className="text-3xl font-bold text-gray-800 mb-8">
-//           Modal de Tâche - Design Glassmorphique
-//         </h1>
-//         <button
-//           onClick={() => setShowModal(true)}
-//           className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-//         >
-//           Ouvrir la Modal
-//         </button>
-//       </div>
-
-//       {showModal && (
-//         <AddTaskModal
-//           onClose={() => setShowModal(false)}
-//           onSubmit={handleSubmit}
-//         />
-//       )}
-//     </div>
-//   );
-// }

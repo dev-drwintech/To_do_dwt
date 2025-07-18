@@ -3,7 +3,7 @@ import React from 'react';
 function TaskItem({ task, onDelete, onComplete, onModify }) {
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'height': return 'from-red-500 to-red-600';
+      case 'higher': return 'from-red-500 to-red-600';
       case 'medium': return 'from-yellow-500 to-orange-500';
       case 'lower': return 'from-green-500 to-green-600';
       default: return 'from-gray-500 to-gray-600';
@@ -12,7 +12,7 @@ function TaskItem({ task, onDelete, onComplete, onModify }) {
 
   const getPriorityBg = (priority) => {
     switch (priority) {
-      case 'height': return 'bg-red-100/80';
+      case 'higher': return 'bg-red-100/80';
       case 'medium': return 'bg-yellow-100/80';
       case 'lower': return 'bg-green-100/80';
       default: return 'bg-gray-100/80';
@@ -21,7 +21,7 @@ function TaskItem({ task, onDelete, onComplete, onModify }) {
 
   const getPriorityText = (priority) => {
     switch (priority) {
-      case 'height': return 'Haute';
+      case 'higher': return 'Haute';
       case 'medium': return 'Moyenne';
       case 'lower': return 'Basse';
       default: return priority;

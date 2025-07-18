@@ -80,7 +80,7 @@ function EditTaskModal({ task, onClose, onSubmit }) {
         name: task.name || '',
         description: task.description || '',
         priority: task.priority || 'medium',
-        end_date: task.end_date ? task.end_date.slice(0, 10) : '', // format date ISO sans heure
+        end_date: task.end_date ? task.end_date.slice(0, 10) : '',
       });
     }
   }, [task]);
@@ -91,7 +91,7 @@ function EditTaskModal({ task, onClose, onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await onSubmit(task.id, form); // envoie l’id + les données modifiées au parent
+    await onSubmit(task.id, form);
     onClose();
   };
 
@@ -117,7 +117,7 @@ function EditTaskModal({ task, onClose, onSubmit }) {
           <Select name="priority" value={form.priority} onChange={handleChange}>
             <option value="lower">lower</option>
             <option value="medium">medium</option>
-            <option value="higher">higher</option>
+            <option value="height">higher</option>
           </Select>
           <Input
             type="date"
